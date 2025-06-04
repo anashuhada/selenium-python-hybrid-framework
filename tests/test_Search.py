@@ -1,27 +1,36 @@
+import time
+
 import pytest
-from selenium.webdriver.common.by import By
+
+from pages.HomePage import HomePage
+from pages.SearchPage import SearchPage
+
 
 @pytest.mark.usefixtures("setup_and_teardown")
 class TestSearch:
     def test_search_for_a_valid_product(self):
-        self.driver.find_element(By.XPATH, "//input[@placeholder='Search']").send_keys("HP")
-        self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btn-lg']").click()
-        assert self.driver.find_element(By.XPATH, "//a[normalize-space()='HP LP3065']").is_displayed()
+        home_page = HomePage(self.driver)
+        home_page.enter_product_into_search_box_field("HP")
+        search_page = home_page.click_on_search_button()
 
+        # search_page = SearchPage(self.driver)
+        time.sleep(3)
+        assert search_page.display_status_of_product()
 
     def test_search_for_an_invalid_product(self):
-        self.driver.find_element(By.XPATH, "//input[@placeholder='Search']").send_keys("Honda")
-        self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btn-lg']").click()
+        home_page = HomePage(self.driver)
+        home_page.enter_product_into_search_box_field("Honda")
+        search_page = home_page.click_on_search_button()
 
         expected_text = "There is no product that matches the search criteria."
-        actual_text = self.driver.find_element(By.XPATH, "//input[@type='button']/following-sibling::p").text
-        assert actual_text.__eq__(expected_text)
-
+        # search_page = SearchPage(self.driver)
+        assert search_page.display_no_product_message().__eq__(expected_text)
 
     def test_search_without_providing_any_product(self):
-        self.driver.find_element(By.XPATH, "//input[@placeholder='Search']").send_keys("")
-        self.driver.find_element(By.XPATH, "//button[@class='btn btn-default btn-lg']").click()
+        home_page = HomePage(self.driver)
+        home_page.enter_product_into_search_box_field("")
+        search_page = home_page.click_on_search_button()
 
         expected_text = "There is no product that matches the search criteria."
-        actual_text = self.driver.find_element(By.XPATH, "//input[@type='button']/following-sibling::p").text
-        assert actual_text.__eq__(expected_text)
+        # search_page = SearchPage(self.driver)
+        assert search_page.display_no_product_message().__eq__(expected_text)

@@ -2,104 +2,108 @@ import time
 from datetime import datetime
 
 import pytest
-from selenium.webdriver.common.by import By
+
+from pages.AccountSuccessPage import AccountSuccessPage
+from pages.HomePage import HomePage
+from pages.RegisterPage import RegisterPage
+
 
 @pytest.mark.usefixtures("setup_and_teardown")
 class TestRegister:
     def test_create_account_with_mandatory_fields(self):
-        self.driver.find_element(By.XPATH, "//span[normalize-space()='My Account']").click()
-        self.driver.find_element(By.XPATH, "//a[normalize-space()='Register']").click()
-        self.driver.find_element(By.XPATH, "//input[@id='input-firstname']").send_keys("Alex")
-        self.driver.find_element(By.XPATH, "//input[@id='input-lastname']").send_keys("Smith")
-        self.driver.find_element(By.XPATH, "//input[@id='input-email']").send_keys(self.generate_email_with_time_stamp())
-        self.driver.find_element(By.XPATH, "//input[@id='input-telephone']").send_keys("0123456789")
-        self.driver.find_element(By.XPATH, "//input[@id='input-password']").send_keys("12345")
-        self.driver.find_element(By.XPATH, "//input[@id='input-confirm']").send_keys("12345")
-        self.driver.find_element(By.XPATH, "//input[@name='agree']").click()
-        self.driver.find_element(By.XPATH, "//input[@value='Continue']").click()
-        expected_message = "Your Account Has Been Created!"
+        home_page = HomePage(self.driver)
+        home_page.click_on_link_my_account()
+        home_page.click_on_link_register()
+
+        register_page = RegisterPage(self.driver)
+        register_page.enter_first_name("Alex")
+        register_page.enter_last_name("Smith")
+        register_page.enter_email(self.generate_email_with_time_stamp())
+        register_page.enter_telephone("0123456789")
+        register_page.enter_password("12345")
+        register_page.enter_confirm_password("12345")
+        register_page.click_radio_button_agree()
+        # register_page.click_checkbox_privacy_policy()
+        register_page.click_button_continue()
 
         time.sleep(2)
 
-        actual_message = self.driver.find_element(By.XPATH, "//div[@id='content']//h1").text
-        assert expected_message in actual_message
-
+        account_success_page = AccountSuccessPage(self.driver)
+        expected_message = "Your Account Has Been Created!"
+        assert expected_message in account_success_page.display_header_message()
 
     def test_create_account_by_providing_all_fields(self):
-        self.driver.find_element(By.XPATH, "//span[normalize-space()='My Account']").click()
-        self.driver.find_element(By.XPATH, "//a[normalize-space()='Register']").click()
-        self.driver.find_element(By.XPATH, "//input[@id='input-firstname']").send_keys("Alex")
-        self.driver.find_element(By.XPATH, "//input[@id='input-lastname']").send_keys("Smith")
-        self.driver.find_element(By.XPATH, "//input[@id='input-email']").send_keys(self.generate_email_with_time_stamp())
-        self.driver.find_element(By.XPATH, "//input[@id='input-telephone']").send_keys("0123456789")
-        self.driver.find_element(By.XPATH, "//input[@id='input-password']").send_keys("12345")
-        self.driver.find_element(By.XPATH, "//input[@id='input-confirm']").send_keys("12345")
-        self.driver.find_element(By.XPATH, "//label[normalize-space()='Yes']//input[@name='newsletter']").click()
-        self.driver.find_element(By.XPATH, "//input[@name='agree']").click()
-        self.driver.find_element(By.XPATH, "//input[@value='Continue']").click()
+        home_page = HomePage(self.driver)
+        home_page.click_on_link_my_account()
+        home_page.click_on_link_register()
 
+        register_page = RegisterPage(self.driver)
+        register_page.enter_first_name("Alex")
+        register_page.enter_last_name("Smith")
+        register_page.enter_email(self.generate_email_with_time_stamp())
+        register_page.enter_telephone("0123456789")
+        register_page.enter_password("12345")
+        register_page.enter_confirm_password("12345")
+        register_page.click_yes_radio_button()
+        register_page.click_checkbox_privacy_policy()
+        register_page.click_button_continue()
+
+        time.sleep(2)
+
+        account_success_page = AccountSuccessPage(self.driver)
         expected_message = "Your Account Has Been Created!"
-        actual_message = self.driver.find_element(By.XPATH, "//div[@id='content']//h1").text
-        assert expected_message in actual_message
-
+        assert expected_message in account_success_page.display_header_message()
 
     def test_register_with_duplicate_email(self):
-        self.driver.find_element(By.XPATH, "//span[normalize-space()='My Account']").click()
-        self.driver.find_element(By.XPATH, "//a[normalize-space()='Register']").click()
-        self.driver.find_element(By.XPATH, "//input[@id='input-firstname']").send_keys("Alex")
-        self.driver.find_element(By.XPATH, "//input[@id='input-lastname']").send_keys("Smith")
-        self.driver.find_element(By.XPATH, "//input[@id='input-email']").send_keys("alex.smith@yopmail.com")
-        self.driver.find_element(By.XPATH, "//input[@id='input-telephone']").send_keys("0123456789")
-        self.driver.find_element(By.XPATH, "//input[@id='input-password']").send_keys("P@ssw0rd#123")
-        self.driver.find_element(By.XPATH, "//input[@id='input-confirm']").send_keys("P@ssw0rd#123")
-        self.driver.find_element(By.XPATH, "//label[normalize-space()='Yes']//input[@name='newsletter']").click()
-        self.driver.find_element(By.XPATH, "//input[@name='agree']").click()
-        self.driver.find_element(By.XPATH, "//input[@value='Continue']").click()
+        home_page = HomePage(self.driver)
+        home_page.click_on_link_my_account()
+        home_page.click_on_link_register()
+
+        register_page = RegisterPage(self.driver)
+        register_page.enter_first_name("Alex")
+        register_page.enter_last_name("Smith")
+        register_page.enter_email("alex.smith@yopmail.com")
+        register_page.enter_telephone("0123456789")
+        register_page.enter_password("12345")
+        register_page.enter_confirm_password("12345")
+        register_page.click_yes_radio_button()
+        register_page.click_checkbox_privacy_policy()
+        register_page.click_button_continue()
 
         expected_message = "Warning: E-Mail Address is already registered!"
-        actual_message = self.driver.find_element(By.XPATH, "//div[@class='alert alert-danger alert-dismissible']").text
-        assert expected_message in actual_message
-
+        assert expected_message in register_page.display_warning_duplicate_email()
 
     def test_without_entering_any_fields(self):
-        self.driver.find_element(By.XPATH, "//span[normalize-space()='My Account']").click()
-        self.driver.find_element(By.XPATH, "//a[normalize-space()='Register']").click()
-        self.driver.find_element(By.XPATH, "//input[@id='input-firstname']").send_keys("")
-        self.driver.find_element(By.XPATH, "//input[@id='input-lastname']").send_keys("")
-        self.driver.find_element(By.XPATH, "//input[@id='input-email']").send_keys("")
-        self.driver.find_element(By.XPATH, "//input[@id='input-telephone']").send_keys("")
-        self.driver.find_element(By.XPATH, "//input[@id='input-password']").send_keys("")
-        self.driver.find_element(By.XPATH, "//input[@id='input-confirm']").send_keys("")
-        self.driver.find_element(By.XPATH, "//input[@value='Continue']").click()
+        home_page = HomePage(self.driver)
+        home_page.click_on_link_my_account()
+        home_page.click_on_link_register()
+
+        register_page = RegisterPage(self.driver)
+        register_page.enter_first_name("")
+        register_page.enter_last_name("")
+        register_page.enter_email("")
+        register_page.enter_telephone("")
+        register_page.enter_password("")
+        register_page.enter_confirm_password("")
+        register_page.click_button_continue()
 
         expected_warning_first_name = "First Name must be between 1 and 32 characters!"
-        actual_warning_first_name = self.driver.find_element(By.XPATH,
-                                                        "//input[@id='input-firstname']//following-sibling::div").text
-        assert actual_warning_first_name in expected_warning_first_name
+        assert register_page.display_warning_first_name() in expected_warning_first_name
 
         expected_warning_last_name = "Last Name must be between 1 and 32 characters!"
-        actual_warning_last_name = self.driver.find_element(By.XPATH,
-                                                       "//input[@id='input-lastname']//following-sibling::div").text
-        assert actual_warning_last_name in expected_warning_last_name
+        assert register_page.display_warning_last_name() in expected_warning_last_name
 
         expected_warning_email = "E-Mail Address does not appear to be valid!"
-        actual_warning_email = self.driver.find_element(By.XPATH, "//input[@id='input-email']//following-sibling::div").text
-        assert actual_warning_email in expected_warning_email
+        assert register_page.display_warning_email() in expected_warning_email
 
         expected_warning_telephone = "Telephone must be between 3 and 32 characters!"
-        actual_warning_telephone = self.driver.find_element(By.XPATH,
-                                                       "//input[@id='input-telephone']//following-sibling::div").text
-        assert actual_warning_telephone in expected_warning_telephone
+        assert register_page.display_warning_telephone() in expected_warning_telephone
 
         expected_warning_password = "Password must be between 4 and 20 characters!"
-        actual_warning_password = self.driver.find_element(By.XPATH,
-                                                      "//input[@id='input-password']//following-sibling::div").text
-        assert actual_warning_password in expected_warning_password
+        assert register_page.display_warning_password() in expected_warning_password
 
         expected_warning_policy = "Warning: You must agree to the Privacy Policy!"
-        actual_warning_policy = self.driver.find_element(By.XPATH, "//div[@class='alert alert-danger alert-dismissible']").text
-        assert actual_warning_policy in expected_warning_policy
-
+        assert register_page.display_warning_policy() in expected_warning_policy
 
     def generate_email_with_time_stamp(self):
         time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
