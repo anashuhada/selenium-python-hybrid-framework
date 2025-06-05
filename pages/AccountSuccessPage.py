@@ -1,12 +1,15 @@
 from selenium.webdriver.common.by import By
 
+from pages.BasePage import BasePage
 
-class AccountSuccessPage:
+
+class AccountSuccessPage(BasePage):
 
     def __init__(self, driver):
-        self.driver = driver
+        super().__init__(driver)
 
-    header_message = "//div[@id='content']//h1"
+    header_message_xpath = "//div[@id='content']//h1"
 
     def display_header_message(self):
-        return self.driver.find_element(By.XPATH, self.header_message).text
+        return self.get_element_text("header_message_xpath", self.header_message_xpath)
+        # return self.driver.find_element(By.XPATH, self.header_message).text
