@@ -1,7 +1,5 @@
 import time
 
-from selenium.webdriver.common.by import By
-
 from pages.AccountSuccessPage import AccountSuccessPage
 from pages.BasePage import BasePage
 
